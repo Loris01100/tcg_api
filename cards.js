@@ -4,28 +4,25 @@ import path from 'path';
 const cardsPath = path.resolve('data/cards.json');
 const usersPath = path.resolve('data/users.json');
 
-const rarityChances = {
-    Common: 80,
-    Rare: 15,
-    Legendary: 5
-};
-
 function getRandomCardByRarity(cards) {
     const rand = Math.random() * 100;
-    let cumulative = 0;
 
-    for (const [rarity, chance] of Object.entries(rarityChances)) {
-        cumulative += chance;
-        if (rand < cumulative) {
-            const filtrer = cards.filter(card => card.rarity === rarity);
-            if (filtrer.length > 0) {
-                return filtrer[Math.floor(Math.random() * filtrer.length)];
-            }
-        }
+    let rarity;
+    if (rand < 5) {
+        rarity = 'legendary';
+    } else if (rand < 15) {
+        rarity = 'rare';
+    } else {
+        rarity = 'common';
     }
 
-    return cards[Math.floor(Math.random() * cards.length)];
+    const filtreCarte = cards.filter(card => card.rarity === rarity);
+    if (filtreCarte.length === 0) return null;
+
+    const randomIndex = Math.floor(Math.random() * filtreCarte.length);
+    return filtreCarte[randomIndex];
 }
+
 
 function OpenBooster(req, res) {
     const token = req.body.token;
@@ -35,7 +32,6 @@ function OpenBooster(req, res) {
         users = JSON.parse(userData);
 
         const userIndex = users.findIndex(u => u.token === token);
-
         const now = Date.now();
         const lastBooster = users[userIndex].lastBooster || 0;
         const delay = 5 * 60 * 1000;  //5 minutes entre chaque booster possible
@@ -59,11 +55,7 @@ function OpenBooster(req, res) {
             users[userIndex].lastBooster = now;
 
             fs.writeFile(usersPath, JSON.stringify(users, null, 2), 'utf8', (err) => {
-                if (err) {
-                    return res.status(500).json({ message: "Erreur enregistrement collection" });
-                }
-
-                res.status(200).json({
+                    res.status(200).json({
                     message: "Booster ouvert avec succès",
                     booster
                 });
