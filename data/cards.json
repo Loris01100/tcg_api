@@ -1,7 +1,13 @@
 [
   { "id": 1, "name": "Bulbizarre", "rarity": "common" },
+  { "id": 2, "name": "Herbizarre", "rarity": "rare" },
+  { "id": 3, "name": "Florizarre", "rarity": "rare" },
   { "id": 4, "name": "Salamèche", "rarity": "common" },
+  { "id": 5, "name": "Reptincel", "rarity": "rare" },
+  { "id": 6, "name": "Dracaufeu", "rarity": "rare" },
   { "id": 7, "name": "Carapuce", "rarity": "common" },
+  { "id": 8, "name": "Carabaffe", "rarity": "rare" },
+  { "id": 9, "name": "Tortank", "rarity": "rare" },
   { "id": 25, "name": "Pikachu", "rarity": "rare" },
   { "id": 150, "name": "Mewtwo", "rarity": "legendary" }
 ]

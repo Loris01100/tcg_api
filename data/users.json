@@ -15,19 +15,9 @@
         "rarity": "common"
       },
       {
-        "id": 1,
-        "name": "Bulbizarre",
-        "rarity": "common"
-      },
-      {
         "id": 150,
         "name": "Mewtwo",
         "rarity": "legendary"
-      },
-      {
-        "id": 4,
-        "name": "Salamèche",
-        "rarity": "common"
       },
       {
         "id": 4,
@@ -43,16 +33,6 @@
         "id": 25,
         "name": "Pikachu",
         "rarity": "rare"
-      },
-      {
-        "id": 4,
-        "name": "Salamèche",
-        "rarity": "common"
-      },
-      {
-        "id": 7,
-        "name": "Carapuce",
-        "rarity": "common"
       }
     ],
     "token": "ac41f5a82f8c4d360a09002141946027",

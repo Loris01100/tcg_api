@@ -2,13 +2,13 @@ import express from 'express';
 import { RegisterUser, Login, GetUser, DisconnectUser } from './users.js';
 import { OpenBooster } from './cards.js';
 
-
-
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+
+//route par défaut
 app.get('/', (req, res) => {
     res.json({
         message: "Bienvenue sur l'API TCG",
