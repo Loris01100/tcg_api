@@ -3,13 +3,71 @@
     "id": 1,
     "username": "Loris",
     "password": "bach",
-    "collection": []
+    "collection": [
+      {
+        "id": 7,
+        "name": "Carapuce",
+        "rarity": "common"
+      },
+      {
+        "id": 1,
+        "name": "Bulbizarre",
+        "rarity": "common"
+      },
+      {
+        "id": 1,
+        "name": "Bulbizarre",
+        "rarity": "common"
+      },
+      {
+        "id": 150,
+        "name": "Mewtwo",
+        "rarity": "legendary"
+      },
+      {
+        "id": 4,
+        "name": "Salamèche",
+        "rarity": "common"
+      },
+      {
+        "id": 4,
+        "name": "Salamèche",
+        "rarity": "common"
+      },
+      {
+        "id": 150,
+        "name": "Mewtwo",
+        "rarity": "legendary"
+      },
+      {
+        "id": 25,
+        "name": "Pikachu",
+        "rarity": "rare"
+      },
+      {
+        "id": 4,
+        "name": "Salamèche",
+        "rarity": "common"
+      },
+      {
+        "id": 7,
+        "name": "Carapuce",
+        "rarity": "common"
+      }
+    ],
+    "token": "ac41f5a82f8c4d360a09002141946027",
+    "lastBooster": 1746473991715
   },
   {
     "id": 2,
     "username": "Mao",
     "password": "Mao",
     "collection": []
-
+  },
+  {
+    "id": 3,
+    "username": "Loris",
+    "password": "bach",
+    "collection": []
   }
 ]

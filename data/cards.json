@@ -1,0 +1,7 @@
+[
+  { "id": 1, "name": "Bulbizarre", "rarity": "common" },
+  { "id": 4, "name": "Salamèche", "rarity": "common" },
+  { "id": 7, "name": "Carapuce", "rarity": "common" },
+  { "id": 25, "name": "Pikachu", "rarity": "rare" },
+  { "id": 150, "name": "Mewtwo", "rarity": "legendary" }
+]
