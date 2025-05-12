@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <title>Créer un compte - Training Card GAME</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+
+<nav>
+    <a href="/profil">Profil</a>
+    <a href="/card">Cartes</a>
+    <a href="/booster">Booster</a>
+</nav>
+
+<h1>Créer un compte</h1>
+
+<form action="/register" method="post">
+    <input type="text" id="username" name="username" placeholder="Choisissez un identifiant" required>
+    <input type="password" id="password" name="password" placeholder="Choisissez un mot de passe" required>
+    <input type="submit" value="Créer mon compte">
+</form>
+
+<a href="/login">J'ai déjà un compte</a>
+
+</body>
+</html>

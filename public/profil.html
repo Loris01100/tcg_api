@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <title>Mon Profil - Training Card GAME</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+
+<nav>
+    <a href="/profil">Profil</a>
+    <a href="/card">Cartes</a>
+    <a href="/booster">Booster</a>
+</nav>
+
+<h1>Mon Profil</h1>
+
+<section id="user-info">
+    <h2>Informations utilisateur</h2>
+    <p><strong>Nom d'utilisateur :</strong> <span id="username"></span></p>
+</section>
+
+<section id="card-collection">
+    <h2>Ma collection de cartes</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Rareté</th>
+        </tr>
+        </thead>
+        <tbody id="card-table-body"></tbody>
+    </table>
+</section>
+
+<a href="/login">Se déconnecter</a>
+
+</body>
+<script src="/static/js/fetchProfil.js"></script>
+
+</html>

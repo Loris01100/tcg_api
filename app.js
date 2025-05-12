@@ -1,33 +1,36 @@
 import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { RegisterUser, Login, GetUser, DisconnectUser } from './users.js';
-import { OpenBooster } from './cards.js';
+import { GetAllCards, OpenBooster } from './cards.js';
 
 const app = express();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use('/static', express.static(path.join(__dirname, 'public')));
 
-//route par défaut
-app.get('/', (req, res) => {
-    res.json({
-        message: "Bienvenue sur l'API TCG",
-        data: {}
-    });
-});
-
-//route connexion
-app.post('/register', RegisterUser);
-
+// --- ROUTES API ---
 app.post('/login', Login);
+app.post('/register', RegisterUser);
+app.get('/api/profil', GetUser);
+app.post('/logout', DisconnectUser);
+app.get('/api/cards', GetAllCards);
+app.get('/api/booster', OpenBooster);
 
-app.get('/user', GetUser);
+// --- ROUTES HTML ---
+app.get('/', (req, res) => res.redirect('/login'));
+app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'public', 'login.html')));
+app.get('/register', (req, res) => res.sendFile(path.join(__dirname, 'public', 'createUser.html')));
+app.get('/profil', (req, res) => res.sendFile(path.join(__dirname, 'public', 'profil.html')));
+app.get('/card', (req, res) => res.sendFile(path.join(__dirname, 'public', 'card.html')));
+app.get('/booster', (req, res) => res.sendFile(path.join(__dirname, 'public', 'booster.html')));
+app.get('/createUser', (req, res) => res.sendFile(path.join(__dirname, 'public', 'createUser.html')));
 
-app.post('/disconnect', DisconnectUser);
-
-//route carte
-app.post('/booster', OpenBooster);
-
-app.listen(3000, () => {
-    console.log("Serveur démarré sur http://localhost:3000");
+app.listen(3001, () => {
+    console.log('Serveur démarré sur http://localhost:3001');
 });

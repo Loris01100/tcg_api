@@ -43,6 +43,11 @@ function Login(req, res) {
         users = JSON.parse(data || '[]');
 
         const userIndex = users.findIndex(u => u.username === username && u.password === password);
+        if (userIndex === -1) {
+            return res.status(401).json({
+                message: "Nom d'utilisateur ou mot de passe incorrect"
+            });
+        }
 
         const token = crypto.randomBytes(8).toString('hex');
         users[userIndex].token = token;

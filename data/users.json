@@ -110,7 +110,7 @@
         "rarity": "common"
       }
     ],
-    "token": "ac41f5a82f8c4d360a09002141946027",
+    "token": "b15100cdc46ec56f",
     "lastBooster": 1746522897630
   },
   {
@@ -194,13 +194,14 @@
         "rarity": "common"
       }
     ],
-    "token": "12345678",
+    "token": "8975006ad65b23e0",
     "lastBooster": 1746522110221
   },
   {
     "id": 3,
     "username": "Loris",
-    "password": "bach",
+    "password": "ee",
+    "token": "14d7b39c2f9a0e71",
     "collection": []
   }
 ]

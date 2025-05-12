@@ -1,0 +1,226 @@
+/* style.css */
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Verdana', sans-serif;
+    background: linear-gradient(to bottom right, #FFCB05, #3B4CCA);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-image: url('https://assets.pokemon.com/static2/_ui/img/chrome/body_bg.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+}
+
+
+h1, h2 {
+    text-align: center;
+    text-shadow: 2px 2px 5px #000;
+    color: #ffde00;
+    margin-top: 20px;
+    background-color: rgba(0, 0, 0, 0.4);
+    padding: 10px 30px;
+    border-radius: 15px;
+    border: 2px solid #3B4CCA;
+}
+
+input[type="text"],
+input[type="password"] {
+    display: block;
+    margin: 10px auto;
+    padding: 10px;
+    width: 250px;
+    border: 2px solid #3B4CCA;
+    border-radius: 10px;
+    font-size: 1em;
+    background-color: #fff;
+    color: #333;
+}
+
+input[type="submit"] {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    font-size: 1em;
+    font-weight: bold;
+    color: white;
+    background-color: #3B4CCA;
+    border: 2px solid #ffde00;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+input[type="submit"]:hover {
+    background-color: #2a2fa3;
+}
+
+a {
+    color: #ffde00;
+    margin-top: 15px;
+    font-size: 1em;
+    text-decoration: none;
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 8px 15px;
+    border-radius: 10px;
+    border: 1px solid #fff;
+    transition: background-color 0.3s;
+}
+
+a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+
+#card-collection {
+    width: 95%;
+    max-width: 900px;
+    margin: 30px auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    padding: 20px;
+    border-radius: 15px;
+    border: 2px solid #ffde00;
+    box-shadow: 0 0 10px rgba(0,0,0,0.4);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: center;
+    color: #fff;
+    border-bottom: 1px solid #ddd;
+    font-size: 1.1em;
+}
+
+th {
+    background-color: #3B4CCA;
+    color: #ffde00;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+tr:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: scale(1.01);
+    transition: all 0.2s ease-in-out;
+}
+
+
+#user-info {
+    margin-top: 30px;
+    background-color: rgba(0, 0, 0, 0.4);
+    padding: 20px;
+    border-radius: 15px;
+    border: 2px solid #ffde00;
+    box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    text-align: center;
+}
+/* Ajout rapide d’un style spécifique pour les cartes */
+#card-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 30px;
+    width: 100%;
+    max-width: 1000px;
+    margin: auto;
+}
+
+.card {
+    background-color: rgba(255, 255, 255, 0.15);
+    border: 2px solid #ffde00;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+.card h3 {
+    color: #ffde00;
+    margin: 10px 0;
+}
+
+.card p {
+    margin: 5px 0;
+    font-weight: bold;
+}
+
+#booster-result {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 20px;
+}
+
+.card {
+    background-color: rgba(255, 255, 255, 0.15);
+    border: 2px solid #ffde00;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    transition: transform 0.2s;
+    width: 180px;
+}
+
+nav a {
+    margin: 0 10px;
+    text-decoration: none;
+    color: #ffde00;
+    font-weight: bold;
+    border: 1px solid #fff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background-color: rgba(0,0,0,0.3);
+}
+
+nav a:hover {
+    background-color: rgba(255,255,255,0.2);
+}
+
+#message {
+    margin-top: 20px;
+    font-size: 1.2em;
+    color: #fff;
+    text-align: center;
+}
+
+#openBoosterBtn {
+    background-color: #ffcb05; /* Jaune Pokémon */
+    color: #3B4CCA;            /* Bleu Pokémon */
+    font-weight: bold;
+    font-size: 1.2em;
+    border: 3px solid #3B4CCA;
+    border-radius: 12px;
+    padding: 12px 25px;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s, background-color 0.3s;
+    margin-top: 20px;
+}
+
+#openBoosterBtn:hover {
+    background-color: #f5b800;
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(59, 76, 202, 0.6);
+}

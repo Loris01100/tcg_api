@@ -63,5 +63,21 @@ function OpenBooster(req, res) {
         });
     });
 }
+function GetAllCards(req, res) {
+    const token = req.query.token;
 
-export { OpenBooster };
+    fs.readFile(cardsPath, 'utf8', (err, data) => {
+
+        const cards = JSON.parse(data || '[]');
+
+        res.status(200).json({
+            message: "Cartes disponibles",
+            data: cards
+        });
+    });
+}
+
+
+
+
+export { OpenBooster, GetAllCards };
