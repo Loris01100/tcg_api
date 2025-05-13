@@ -14,15 +14,15 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/static', express.static(path.join(__dirname, 'public')));
 
-// --- ROUTES API ---
+//routes pour l'API
 app.post('/login', Login);
 app.post('/register', RegisterUser);
 app.get('/api/profil', GetUser);
 app.post('/logout', DisconnectUser);
 app.get('/api/cards', GetAllCards);
-app.get('/api/booster', OpenBooster);
+app.post('/booster', OpenBooster);
 
-// --- ROUTES HTML ---
+//routes pour l'HTML
 app.get('/', (req, res) => res.redirect('/login'));
 app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'public', 'login.html')));
 app.get('/register', (req, res) => res.sendFile(path.join(__dirname, 'public', 'createUser.html')));

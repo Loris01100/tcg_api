@@ -1,10 +1,10 @@
-document.getElementById('loginForm').addEventListener('submit', function(e) {
+document.getElementById('loginForm').addEventListener('submit', e => {
     e.preventDefault();
 
-    let formData = new FormData(this);
+    let form = new FormData(e.target);
     let data = {
-        username: formData.get('username'),
-        password: formData.get('password')
+        username: form.get('username'),
+        password: form.get('password')
     };
 
     fetch('/login', {
@@ -12,17 +12,11 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
     })
-        .then(response => response.json())
+        .then(res => res.json())
         .then(result => {
-            if (result.data && result.data.token) {
+            if (result.data?.token) {
                 localStorage.setItem('token', result.data.token);
                 window.location.href = '/profil';
-            } else {
-                document.getElementById('message').textContent = result.message || "Erreur de connexion";
             }
-        })
-        .catch(err => {
-            document.getElementById('message').textContent = 'Erreur réseau';
-            console.error(err);
         });
 });

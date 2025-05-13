@@ -1,11 +1,11 @@
 import fs from 'fs';
 import path from 'path';
 
-const cardsPath = path.resolve('data/cards.json');
-const usersPath = path.resolve('data/users.json');
+let cardsPath = path.resolve('data/cards.json');
+let usersPath = path.resolve('data/users.json');
 
 function getRandomCardByRarity(cards) {
-    const rand = Math.random() * 100;
+    let rand = Math.random() * 151;
 
     let rarity;
     if (rand < 5) {
@@ -16,36 +16,36 @@ function getRandomCardByRarity(cards) {
         rarity = 'common';
     }
 
-    const filtreCarte = cards.filter(card => card.rarity === rarity);
+    let filtreCarte = cards.filter(card => card.rarity === rarity);
     if (filtreCarte.length === 0) return null;
 
-    const randomIndex = Math.floor(Math.random() * filtreCarte.length);
+    let randomIndex = Math.floor(Math.random() * filtreCarte.length);
     return filtreCarte[randomIndex];
 }
 
 
 function OpenBooster(req, res) {
-    const token = req.body.token;
+    let token = req.body.token;
 
     fs.readFile(usersPath, 'utf8', (err, userData) => {
         let users;
         users = JSON.parse(userData);
 
-        const userIndex = users.findIndex(u => u.token === token);
-        const now = Date.now();
-        const lastBooster = users[userIndex].lastBooster || 0;
-        const delay = 5 * 60 * 1000;  //5 minutes entre chaque booster possible
+        let userIndex = users.findIndex(u => u.token === token);
+        let now = Date.now();
+        let lastBooster = users[userIndex].lastBooster || 0;
+        let delay = 5 * 60 * 1000;  //5 minutes entre chaque booster possible
 
         if (now - lastBooster < delay) {
             const tempRestant = Math.ceil((delay - (now - lastBooster)) / 1000);
-            return res.status(429).json({ message: ` ${tempRestant} avant l'ouverture d'un nouveau booster` });
+            return res.status(429).json({ message: ` ${tempRestant} secondes avant l'ouverture d'un nouveau booster` });
         }
 
         fs.readFile(cardsPath, 'utf8', (err, cardData) => {
             let cards;
             cards = JSON.parse(cardData);
 
-            const booster = [];
+            let booster = [];
             for (let i = 0; i < 5; i++) {
                 const card = getRandomCardByRarity(cards);
                 booster.push(card);
@@ -64,11 +64,11 @@ function OpenBooster(req, res) {
     });
 }
 function GetAllCards(req, res) {
-    const token = req.query.token;
+    let token = req.query.token;
 
     fs.readFile(cardsPath, 'utf8', (err, data) => {
 
-        const cards = JSON.parse(data || '[]');
+        let cards = JSON.parse(data || '[]');
 
         res.status(200).json({
             message: "Cartes disponibles",

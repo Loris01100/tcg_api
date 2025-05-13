@@ -20,10 +20,6 @@ if (!token) {
                 cardList.appendChild(div);
             });
         })
-        .catch(error => {
-            console.error('Erreur lors du chargement des cartes :', error);
-            window.location.href = '/card';
-        });
 }
 
 let logoutLink = document.getElementById('logout-link');

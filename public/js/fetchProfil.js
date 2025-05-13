@@ -22,10 +22,6 @@ if (!token) {
                 });
             }
         })
-        .catch(error => {
-            console.error('Erreur lors du chargement du profil :', error);
-            window.location.href = '/login';
-        });
 }
 
 document.getElementById('logout-link').addEventListener('click', function(e) {

@@ -5,7 +5,7 @@ const filePath = 'data/users.json';
 
 //Assure l'enregistrement d'un utilisateur
 function RegisterUser(req, res) {
-   const { username, password } = req.body;
+   let { username, password } = req.body;
 
     fs.readFile(filePath, 'utf8', (err, data) => {
         let users = [];
@@ -14,7 +14,7 @@ function RegisterUser(req, res) {
         }
 
         //création d'un nouvel utilisateur
-        const nouvUser = {
+        let nouvUser = {
             id: users.length > 0 ? users[users.length - 1].id + 1 : 1,
             username,
             password,
@@ -42,14 +42,14 @@ function Login(req, res) {
         let users = [];
         users = JSON.parse(data || '[]');
 
-        const userIndex = users.findIndex(u => u.username === username && u.password === password);
+        let userIndex = users.findIndex(u => u.username === username && u.password === password);
         if (userIndex === -1) {
             return res.status(401).json({
                 message: "Nom d'utilisateur ou mot de passe incorrect"
             });
         }
 
-        const token = crypto.randomBytes(8).toString('hex');
+        let token = crypto.randomBytes(8).toString('hex');
         users[userIndex].token = token;
 
         fs.writeFile(filePath, JSON.stringify(users, null, 2), 'utf8', (err) => {
@@ -79,9 +79,9 @@ function GetUser(req, res) {
             req.query.token ||
             req.body?.token;
 
-        const user = users.find(u => u.token === token);
+        let user = users.find(u => u.token === token);
 
-        const { password, token: _, ...userCorr } = user;
+        let { password, token: _, ...userCorr } = user;
 
         res.status(200).json({
             message: "Utilisateur trouvé",
@@ -101,9 +101,6 @@ function DisconnectUser(req, res) {
         users = JSON.parse(data || '[]');
 
         const userIndex = users.findIndex(u => u.token === token);
-        if (userIndex === -1) {
-            return res.status(401).json({ message: "Erreur : Token invalide" });
-        }
 
         delete users[userIndex].token;
 
