@@ -1,0 +1,39 @@
+[
+  {
+    "id": 1,
+    "username": "Loris",
+    "password": "bach",
+    "collection": [
+
+    ],
+    "token": "bc778ccb876e8297",
+    "lastBooster": 1747597892651
+  },
+  {
+    "id": 2,
+    "username": "Mao",
+    "password": "Mao",
+    "collection": [
+
+    ],
+    "token": "ac531256b022c7db",
+    "lastBooster": 1747127929022
+  },
+  {
+    "id": 3,
+    "username": "Loris",
+    "password": "ee",
+    "token": "f759938251a80753",
+    "collection": [
+
+    ],
+    "lastBooster": 1747128355818
+  },
+  {
+    "id": 4,
+    "username": "loris",
+    "password": "zouzou",
+    "collection": [],
+    "token": "8a74ceed5c65874a"
+  }
+]
