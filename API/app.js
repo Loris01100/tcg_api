@@ -1,8 +1,6 @@
 import express from 'express';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import { RegisterUser, Login, GetUser, DisconnectUser } from './users.js';
-import { GetAllCards, OpenBooster } from './cards.js';
+import { GetAllCards, OpenBooster, ConvertCards } from './cards.js';
 import cors from 'cors';
 
 const app = express();
@@ -19,6 +17,9 @@ app.get('/api/profil', GetUser);
 app.post('/logout', DisconnectUser);
 app.get('/api/cards', GetAllCards);
 app.post('/booster', OpenBooster);
+app.post('/convert', ConvertCards);
+
+
 
 app.listen(3001, () => {
     console.log('Serveur démarré sur http://localhost:3001');

@@ -42,16 +42,23 @@ function OpenBooster(req, res) {
         }
 
         fs.readFile(cardsPath, 'utf8', (err, cardData) => {
-            let cards;
-            cards = JSON.parse(cardData);
-
+            let cards = JSON.parse(cardData);
             let booster = [];
+            let collection = users[userIndex].collection || [];
+
             for (let i = 0; i < 5; i++) {
                 const card = getRandomCardByRarity(cards);
                 booster.push(card);
-                users[userIndex].collection.push(card);
+
+                let found = collection.find(c => c.id === card.id);
+                if (found) {
+                    found.nb += 1;
+                } else {
+                    collection.push({ id: card.id, nb: 1 });
+                }
             }
 
+            users[userIndex].collection = collection;
             users[userIndex].lastBooster = now;
 
             fs.writeFile(usersPath, JSON.stringify(users, null, 2), 'utf8', (err) => {
@@ -77,7 +84,45 @@ function GetAllCards(req, res) {
     });
 }
 
+function ConvertCards(req, res) {
+    const { token, cardId } = req.body;
+
+    fs.readFile(usersPath, 'utf8', (err, userData) => {
+        let users = JSON.parse(userData || '[]');
+        let user = users.find(u => u.token === token);
+        if (!user) return res.status(401).json({ message: "Token invalide" });
+
+        let collection = user.collection || [];
+        let cardEntry = collection.find(c => c.id === cardId);
+        if (!cardEntry || cardEntry.nb < 2) {
+            return res.status(400).json({ message: "Cette carte ne peut pas être convertie" });
+        }
+
+        fs.readFile(cardsPath, 'utf8', (err, cardData) => {
+            let cards = JSON.parse(cardData || '[]');
+            let card = cards.find(c => c.id === cardId);
+            if (!card) return res.status(404).json({ message: "Carte introuvable" });
+
+            const gain = {
+                common: 5,
+                rare: 25,
+                legendary: 150
+            };
+
+            // Mise à jour
+            cardEntry.nb -= 1;
+            user.currency += gain[card.rarity] || 0;
+
+            fs.writeFile(usersPath, JSON.stringify(users, null, 2), 'utf8', () => {
+                res.status(200).json({
+                    message: "Carte convertie avec succès",
+                    currency: user.currency
+                });
+            });
+        });
+    });
+}
 
 
 
-export { OpenBooster, GetAllCards };
+export { OpenBooster, GetAllCards, ConvertCards };
