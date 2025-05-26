@@ -1,6 +1,9 @@
 document.getElementById('loginForm').addEventListener('submit', e => {
     e.preventDefault();
 
+    let message = document.getElementById('message');
+    message.textContent = "connexion";
+
     let form = new FormData(e.target);
     let data = {
         username: form.get('username'),

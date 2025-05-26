@@ -1,130 +1,129 @@
-import fs from 'fs';
 import crypto from 'crypto';
-
-const filePath = 'data/users.json';
+import { User, Card, Collection } from './Models/Association.js';
 
 //Assure l'enregistrement d'un utilisateur
-function RegisterUser(req, res) {
-   let { username, password } = req.body;
+export async function RegisterUser(req, res) {
+    console.log("Headers Content-Type:", req.headers['content-type']);
+    console.log("Corps de la requête (req.body) :", req.body);
 
-    fs.readFile(filePath, 'utf8', (err, data) => {
+    const { username, password } = req.body;
 
-
-        let users = [];
-        if (data) {
-            users = JSON.parse(data);
+    try {
+        const existing = await User.findOne({ where: { username } });
+        if (existing) {
+            return res.status(409).send("Nom d'utilisateur déjà pris");
         }
 
-
-
-        //création d'un nouvel utilisateur
-        let nouvUser = {
-            id: users.length > 0 ? users[users.length - 1].id + 1 : 1,
+        const newUser = await User.create({
             username,
             password,
             currency: 0,
-            collection: []
-        };
-
-        users.push(nouvUser);
-
-        fs.writeFile(filePath, JSON.stringify(users, null, 2), 'utf8', (err) => {
-                res.status(201).json({
-                message: "Utilisateur enregistré avec succès",
-                user: { id: nouvUser.id, username: nouvUser.username }
-            });
+            token: crypto.randomBytes(8).toString('hex'),
+            lastBooster: Date.now()
         });
-    });
+
+        console.log("Nouvel utilisateur enregistré :", newUser.username);
+
+        if (req.headers.accept?.includes('text/html')) {
+            res.redirect('/login.html');
+        } else {
+            res.status(201).json({
+                message: "Utilisateur enregistré avec succès",
+                user: { id: newUser.id, username: newUser.username }
+            });
+        }
+
+    } catch (error) {
+        console.error("Erreur enregistrement :", error);
+        res.status(500).send("Erreur serveur");
+    }
 }
 
 
+
 //assure la connexion d'un utilisateur
-function Login(req, res) {
+export async function Login(req, res) {
     const { username, password } = req.body;
 
-    fs.readFile(filePath, 'utf8', (err, data) => {
+    try {
+        const user = await User.findOne({ where: { username, password } });
 
-        if (err) {
-            console.error("Erreur lecture fichier :", err);
-            return res.status(500).json({ message: "Erreur serveur" });
+        if (!user) {
+            return res.status(401).json({ message: "nom d'utilisateur ou mot de passe incorrect" });
         }
 
-        let users = [];
-        users = JSON.parse(data || '[]');
+        const token = crypto.randomBytes(8).toString('hex');
+        user.token = token;
+        await user.save();
 
-        let userIndex = users.findIndex(u => u.username === username && u.password === password);
-        if (userIndex === -1) {
-            return res.status(401).json({
-                message: "Nom d'utilisateur ou mot de passe incorrect"
-            });
-        }
-
-        let token = crypto.randomBytes(8).toString('hex');
-        users[userIndex].token = token;
-
-        fs.writeFile(filePath, JSON.stringify(users, null, 2), 'utf8', (err) => {
-            if (err) {
-                console.error("Erreur écriture fichier :", err);
-                return res.status(500).json({ message: "Erreur serveur" });
-            }
-
-            console.log("Connexion réussie pour :", username);
-            return res.status(200).json({
-                message: "Authentification réussie",
-                data: { token }
-            });
+        res.status(200).json({
+            message: "Authentification réussie",
+            data: { token }
         });
-    });
+    } catch (error) {
+        console.error("Erreur de connexion :", error);
+        res.status(500).json({ message: "Erreur serveur" });
+    }
 }
 
 
 //récupère un utilisateur grâce à son token
-function GetUser(req, res) {
+export async function GetUser(req, res) {
+    let token = req.query.token || req.body?.token;
 
-    const token =
-        req.query.token ||
-        req.body?.token;
+    try {
+        let user = await User.findOne({
+            where: { token },
+            include: {
+                model: Card,
+                through: { attributes: ['nb'] }
+            }
+        });
 
-    fs.readFile(filePath, 'utf8', (err, data) => {
+        if (!user) {
+            return res.status(404).json({ message: "Utilisateur introuvable" });
+        }
 
-        let users = [];
-        users = JSON.parse(data || '[]');
-
-        let token;
-        token =
-            req.query.token ||
-            req.body?.token;
-
-        let user = users.find(u => u.token === token);
-
-        let { password, token: _, ...userCorr } = user;
+        let collection = user.Cards.map(card => ({
+            id: card.id,
+            name: card.name,
+            rarity: card.rarity,
+            nb: card.Collection.nb
+        }));
 
         res.status(200).json({
             message: "Utilisateur trouvé",
-            data: userCorr
+            data: {
+                id: user.id,
+                username: user.username,
+                currency: user.currency,
+                lastBooster: user.lastBooster,
+                collection
+            }
         });
-    });
-
+    } catch (error) {
+        console.error("Erreur GetUser :", error);
+        res.status(500).json({ message: "Erreur serveur" });
+    }
 }
 
 //assure la déconnexion d'un utilisateur
-function DisconnectUser(req, res) {
+export async function DisconnectUser(req, res) {
     const token = req.body.token;
 
-    fs.readFile(filePath, 'utf8', (err, data) => {
+    try {
+        const user = await User.findOne({ where: { token } });
 
-        let users = [];
-        users = JSON.parse(data || '[]');
+        if (!user) {
+            return res.status(404).json({ message: "l'utilisateur n'a pas été trouvé dans la base de données" });
+        }
 
-        const userIndex = users.findIndex(u => u.token === token);
+        user.token = null;
+        await user.save();
 
-        delete users[userIndex].token;
-
-        fs.writeFile(filePath, JSON.stringify(users, null, 2), 'utf8', (err) => {
-
-            res.status(200).json({ message: "Déconnexion réussie" });
-        });
-    });
+        res.status(200).json({ message: "Déconnexion réussie" });
+    } catch (error) {
+        console.error("Erreur déconnexion :", error);
+        res.status(500).json({ message: "Erreur côté serveur" });
+    }
 }
-
-export { RegisterUser, Login, GetUser, DisconnectUser };

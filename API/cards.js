@@ -1,128 +1,120 @@
-import fs from 'fs';
-import path from 'path';
+import { User, Card, Collection } from './Models/Association.js';
 
-let cardsPath = path.resolve('data/cards.json');
-let usersPath = path.resolve('data/users.json');
+function getRandomCardByRarity(cards, rarity) {
+    let filtered = cards.filter(card => card.rarity === rarity);
+    if (filtered.length === 0) return null;
+    let index = Math.floor(Math.random() * filtered.length);
+    return filtered[index];
+}
 
-function getRandomCardByRarity(cards) {
-    let rand = Math.random() * 151;
-
-    let rarity;
-    if (rand < 5) {
-        rarity = 'legendary';
-    } else if (rand < 15) {
-        rarity = 'rare';
-    } else {
-        rarity = 'common';
-    }
-
-    let filtreCarte = cards.filter(card => card.rarity === rarity);
-    if (filtreCarte.length === 0) return null;
-
-    let randomIndex = Math.floor(Math.random() * filtreCarte.length);
-    return filtreCarte[randomIndex];
+function tirageAleatoireRarity() {
+    let rand = Math.random() * 100;
+    if (rand < 5) return 'legendary';
+    else if (rand < 15) return 'rare';
+    else return 'common';
 }
 
 
-function OpenBooster(req, res) {
-    let token = req.body.token;
+export async function OpenBooster(req, res) {
+    const { token } = req.body;
 
-    fs.readFile(usersPath, 'utf8', (err, userData) => {
-        let users;
-        users = JSON.parse(userData);
+    try {
+        const user = await User.findOne({ where: { token } });
+        if (!user) return res.status(401).json({ message: "Token invalide" });
 
-        let userIndex = users.findIndex(u => u.token === token);
-        let now = Date.now();
-        let lastBooster = users[userIndex].lastBooster || 0;
-        let delay = 5 * 60 * 1000;  //5 minutes entre chaque booster possible
-
-        if (now - lastBooster < delay) {
-            const tempRestant = Math.ceil((delay - (now - lastBooster)) / 1000);
-            return res.status(429).json({ message: ` ${tempRestant} secondes avant l'ouverture d'un nouveau booster` });
+        const now = Date.now();
+        const delay = 0; // tu peux remettre 5 * 60 * 1000 plus tard
+        if (now - user.lastBooster < delay) {
+            const restant = Math.ceil((delay - (now - user.lastBooster)) / 1000);
+            return res.status(429).json({ message: `Attendez encore ${restant}s` });
         }
 
-        fs.readFile(cardsPath, 'utf8', (err, cardData) => {
-            let cards = JSON.parse(cardData);
-            let booster = [];
-            let collection = users[userIndex].collection || [];
+        const allCards = await Card.findAll();
+        const booster = [];
 
-            for (let i = 0; i < 5; i++) {
-                const card = getRandomCardByRarity(cards);
-                booster.push(card);
+        for (let i = 0; i < 5; i++) {
+            const rarity = tirageAleatoireRarity();
+            const card = getRandomCardByRarity(allCards, rarity);
+            if (card) booster.push(card);
+        }
 
-                let found = collection.find(c => c.id === card.id);
-                if (found) {
-                    found.nb += 1;
-                } else {
-                    collection.push({ id: card.id, nb: 1 });
-                }
-            }
-
-            users[userIndex].collection = collection;
-            users[userIndex].lastBooster = now;
-
-            fs.writeFile(usersPath, JSON.stringify(users, null, 2), 'utf8', (err) => {
-                    res.status(200).json({
-                    message: "Booster ouvert avec succès",
-                    booster
-                });
+        for (const card of booster) {
+            const [entry, created] = await Collection.findOrCreate({
+                where: { UserId: user.id, CardId: card.id },
+                defaults: { nb: 1 }
             });
+
+            if (!created) {
+                entry.nb += 1;
+                await entry.save();
+            }
+        }
+
+        user.lastBooster = now;
+        await user.save();
+
+        res.status(200).json({
+            message: "Booster ouvert avec succès",
+            booster
         });
-    });
+
+    } catch (err) {
+        console.error("Erreur booster :", err);
+        res.status(500).json({ message: "Erreur serveur" });
+    }
 }
-function GetAllCards(req, res) {
-    let token = req.query.token;
-
-    fs.readFile(cardsPath, 'utf8', (err, data) => {
-
-        let cards = JSON.parse(data || '[]');
-
+export async function GetAllCards(req, res) {
+    try {
+        let cards = await Card.findAll();
         res.status(200).json({
             message: "Cartes disponibles",
             data: cards
         });
-    });
+    } catch (err) {
+        console.error("Erreur :", err);
+        res.status(500).json({ message: "Erreur côté serveur" });
+    }
 }
 
-function ConvertCards(req, res) {
+export async function ConvertCards(req, res) {
     const { token, cardId } = req.body;
 
-    fs.readFile(usersPath, 'utf8', (err, userData) => {
-        let users = JSON.parse(userData || '[]');
-        let user = users.find(u => u.token === token);
+    try {
+        const user = await User.findOne({ where: { token } });
         if (!user) return res.status(401).json({ message: "Token invalide" });
 
-        let collection = user.collection || [];
-        let cardEntry = collection.find(c => c.id === cardId);
-        if (!cardEntry || cardEntry.nb < 2) {
+        const card = await Card.findByPk(cardId);
+        if (!card) return res.status(404).json({ message: "Carte introuvable" });
+
+        const entry = await Collection.findOne({
+            where: { UserId: user.id, CardId: card.id }
+        });
+
+        if (!entry || entry.nb < 2) {
             return res.status(400).json({ message: "Cette carte ne peut pas être convertie" });
         }
 
-        fs.readFile(cardsPath, 'utf8', (err, cardData) => {
-            let cards = JSON.parse(cardData || '[]');
-            let card = cards.find(c => c.id === cardId);
-            if (!card) return res.status(404).json({ message: "Carte introuvable" });
+        // Détermine le gain
+        const gain = {
+            common: 5,
+            rare: 25,
+            legendary: 150
+        };
 
-            const gain = {
-                common: 5,
-                rare: 25,
-                legendary: 150
-            };
+        entry.nb -= 1;
+        await entry.save();
 
-            // Mise à jour
-            cardEntry.nb -= 1;
-            user.currency += gain[card.rarity] || 0;
+        user.currency += gain[card.rarity] || 0;
+        await user.save();
 
-            fs.writeFile(usersPath, JSON.stringify(users, null, 2), 'utf8', () => {
-                res.status(200).json({
-                    message: "Carte convertie avec succès",
-                    currency: user.currency
-                });
-            });
+        res.status(200).json({
+            message: "Carte convertie avec succès",
+            currency: user.currency
         });
-    });
+
+    } catch (err) {
+        console.error("Erreur ConvertCards :", err);
+        res.status(500).json({ message: "Erreur serveur" });
+    }
 }
 
-
-
-export { OpenBooster, GetAllCards, ConvertCards };

@@ -11,13 +11,15 @@
 
 <h1>Créer un compte</h1>
 
-<form action="/register" method="post">
+<form id="registerForm">
     <input type="text" id="username" name="username" placeholder="Choisissez un identifiant" required>
     <input type="password" id="password" name="password" placeholder="Choisissez un mot de passe" required>
     <input type="submit" value="Créer mon compte">
 </form>
 
 <a href="login.html">J'ai déjà un compte</a>
+
+<script src="js/fetchCreateUser.js"></script>
 
 </body>
 </html>

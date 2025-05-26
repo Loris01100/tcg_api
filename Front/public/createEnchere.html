@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Créer une enchère</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+
+<nav>
+    <a href="profil.html">Profil</a>
+    <a href="card.html">Cartes</a>
+    <a href="booster.html">Booster</a>
+    <a href="enchere.html">Enchères</a>
+</nav>
+
+<h1>Créer une enchère</h1>
+
+<form id="formulaireEnchere">
+    <select id="selectCarte" required></select>
+    <input type="submit" value="Créer l'enchère">
+</form>
+
+<div id="card-list"></div>
+<p id="message"></p>
+
+<a href="login.html">Se déconnecter</a>
+
+<script src="./js/fetchCreateEnchere.js"></script>
+</body>
+</html>
