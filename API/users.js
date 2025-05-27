@@ -3,29 +3,30 @@ import { User, Card, Collection } from './Models/Association.js';
 
 //Assure l'enregistrement d'un utilisateur
 export async function RegisterUser(req, res) {
+    //debug pour voir la requête API
     console.log("Headers Content-Type:", req.headers['content-type']);
     console.log("Corps de la requête (req.body) :", req.body);
 
     let { username, password } = req.body;
 
     try {
-        let existing = await User.findOne({ where: { username } });
-        if (existing) {
-            return res.status(409).send("Nom d'utilisateur déjà pris");
+        let userExistant = await User.findOne({ where: { username } });
+        if (userExistant) {
+            return res.status(409).send("Nom d'utilisateur déjà utilisé");
         }
 
         let newUser = await User.create({
             username,
             password,
-            currency: 0,
-            token: crypto.randomBytes(8).toString('hex'),
-            lastBooster: Date.now()
+            currency: 0, //valeur de base
+            token: crypto.randomBytes(8).toString('hex'), //permet d'avoir un token unique
+            lastBooster: Date.now() //date du dernier booster ouvert
         });
 
-        console.log("Nouvel utilisateur enregistré :", newUser.username);
+        console.log("l'utilisateur à bien été enregistré :", newUser.username);
 
         if (req.headers.accept?.includes('text/html')) {
-            res.redirect('/login.html');
+            res.redirect('/login.html'); //si la requête est valide alors on redirige vers la page de login
         } else {
             res.status(201).json({
                 message: "Utilisateur enregistré avec succès",

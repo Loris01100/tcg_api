@@ -1,5 +1,6 @@
 import { User, Card, Collection } from './Models/Association.js';
 
+//récupère une carte aléatoire par rapport à la rareté obtenu
 function getRandomCardByRarity(cards, rarity) {
     let filtered = cards.filter(card => card.rarity === rarity);
     if (filtered.length === 0) return null;
@@ -7,14 +8,15 @@ function getRandomCardByRarity(cards, rarity) {
     return filtered[index];
 }
 
+//selon le tirage on roll la rareté de la carte
 function tirageAleatoireRarity() {
-    let rand = Math.random() * 100;
+    let rand = Math.random() * 151;
     if (rand < 5) return 'legendary';
     else if (rand < 15) return 'rare';
     else return 'common';
 }
 
-
+//fonction pour ouvrir un booster, async car base de données,
 export async function OpenBooster(req, res) {
     let { token } = req.body;
 
@@ -63,6 +65,8 @@ export async function OpenBooster(req, res) {
         res.status(500).json({ message: "Erreur côté serveur" });
     }
 }
+
+//fonction pour récupérer toutes les cartes et les afficher dans la page carte.html
 export async function GetAllCards(req, res) {
     try {
         let cards = await Card.findAll();
@@ -76,6 +80,7 @@ export async function GetAllCards(req, res) {
     }
 }
 
+//fonction pour convertir une carte en argent
 export async function ConvertCards(req, res) {
     let { token, cardId } = req.body;
 

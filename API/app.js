@@ -1,12 +1,13 @@
 import express from 'express';
 import cors from 'cors';
-import bdd from './db.js';
+import bdd from './db.js'; //utile pour le bdd.sync
 import './Models/Association.js';
 import { RegisterUser, Login, GetUser, DisconnectUser } from './users.js';
 import { GetAllCards, OpenBooster, ConvertCards } from './cards.js';
 import {CreateEnchere, PlaceBid, GetEncheres, CloseEnchere } from './encheres.js';
 
-/*bdd.sync({ alter: true }).then(() => {
+//en commentaire car utile s'il y a une modification dans la base de données
+/*bdd.sync({ alter: false }).then(() => {
     console.log("Base resynchronisée");
 });*/
 
