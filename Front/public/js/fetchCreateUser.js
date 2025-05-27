@@ -1,4 +1,4 @@
-const token = localStorage.getItem('token');
+let token = localStorage.getItem('token');
 
 if (!token) {
     window.location.href = 'login.html';
@@ -6,9 +6,9 @@ if (!token) {
     fetch('http://localhost:3001/api/profil?token=' + token)
         .then(res => res.json())
         .then(data => {
-            const user = data.data;
-            const cards = user.collection;
-            const list = document.getElementById('card-list');
+            let user = data.data;
+            let cards = user.collection;
+            let list = document.getElementById('card-list');
 
             if (!cards || cards.length === 0) {
                 document.getElementById('message').textContent = "Aucune carte à vendre.";
@@ -17,7 +17,7 @@ if (!token) {
 
             cards.forEach(card => {
                 if (card.nb > 0) {
-                    const div = document.createElement('div');
+                    let div = document.createElement('div');
                     div.className = 'card';
                     div.innerHTML = `
                         <h3>${card.Card.name}</h3>

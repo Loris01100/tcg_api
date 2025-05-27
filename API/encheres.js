@@ -1,27 +1,26 @@
 import { User, Card, Collection, Enchere } from './Models/Association.js';
 
-// req.body : { token, cardId }
 export async function CreateEnchere(req, res) {
-    const { token, cardId } = req.body;
+    let { token, cardId } = req.body;
 
     try {
-        const user = await User.findOne({ where: { token } });
+        let user = await User.findOne({ where: { token } });
         if (!user) return res.status(401).json({ message: "Token invalide" });
 
-        const card = await Card.findByPk(cardId);
+        let card = await Card.findByPk(cardId);
         if (!card) return res.status(404).json({ message: "Carte introuvable" });
 
-        const entry = await Collection.findOne({ where: { UserId: user.id, CardId: cardId } });
+        let entry = await Collection.findOne({ where: { UserId: user.id, CardId: cardId } });
         if (!entry || entry.nb < 1)
-            return res.status(400).json({ message: "Vous ne possédez pas cette carte" });
+            return res.status(400).json({ message: "la carte n'est pas en votre possession" });
 
         //pour retirer la carte de la collection de l'utilisateur
         entry.nb -= 1;
         await entry.save();
 
-        const endDate = new Date(Date.now() + 5 * 60 * 1000);
+        let endDate = new Date(Date.now() + 5 * 60 * 1000);
 
-        const enchere = await Enchere.create({
+        let enchere = await Enchere.create({
             CardId: cardId,
             sellerId: user.id,
             end_date: endDate
@@ -29,17 +28,17 @@ export async function CreateEnchere(req, res) {
 
         res.status(201).json({ message: "Enchère créée", enchere });
     } catch (e) {
-        console.error("Erreur création enchère :", e);
+        console.error("Erreur lors de la création de l' enchère :", e);
         res.status(500).json({ message: "Erreur serveur" });
     }
 }
 
 export async function PlaceBid(req, res) {
-    const { token, enchereId, bid } = req.body;
+    let { token, enchereId, bid } = req.body;
 
     try {
-        const user = await User.findOne({ where: { token } });
-        const enchere = await Enchere.findByPk(enchereId, { include: ['seller', 'bidder', Card] });
+        let user = await User.findOne({ where: { token } });
+        let enchere = await Enchere.findByPk(enchereId, { include: ['seller', 'bidder', Card] });
 
         if (!user || !enchere) return res.status(404).json({ message: "Utilisateur ou enchère introuvable" });
         if (enchere.sellerId === user.id) return res.status(403).json({ message: "Vous ne pouvez pas enchérir sur votre propre enchère" });
@@ -49,7 +48,7 @@ export async function PlaceBid(req, res) {
 
         //pour rembourser l' ancien enchérisseur
         if (enchere.bidderId) {
-            const prev = await User.findByPk(enchere.bidderId);
+            let prev = await User.findByPk(enchere.bidderId);
             prev.currency += enchere.bid;
             await prev.save();
         }
@@ -83,11 +82,11 @@ export async function GetEncheres(req, res) {
 }
 
 export async function CloseEnchere(req, res) {
-    const { token, enchereId } = req.body;
+    let { token, enchereId } = req.body;
 
     try {
-        const user = await User.findOne({ where: { token } });
-        const enchere = await Enchere.findByPk(enchereId);
+        let user = await User.findOne({ where: { token } });
+        let enchere = await Enchere.findByPk(enchereId);
 
         if (!user || !enchere) return res.status(404).json({ message: "Introuvable" });
         if (enchere.end_date > new Date()) return res.status(400).json({ message: "Enchère non terminée" });
@@ -96,7 +95,7 @@ export async function CloseEnchere(req, res) {
 
         //pour ajouter la carte obtenu au meilleur enchérisseur
         if (enchere.bidderId) {
-            const entry = await Collection.findOrCreate({
+            let entry = await Collection.findOrCreate({
                 where: { UserId: enchere.bidderId, CardId: enchere.CardId },
                 defaults: { nb: 1 }
             });
@@ -106,12 +105,12 @@ export async function CloseEnchere(req, res) {
             }
 
             //donner l'argent au vendeur
-            const seller = await User.findByPk(enchere.sellerId);
+            let seller = await User.findByPk(enchere.sellerId);
             seller.currency += enchere.bid;
             await seller.save();
         } else {
-            // Si aucun enchérisseur : restituer la carte au vendeur
-            const entry = await Collection.findOrCreate({
+            //si personne n'enrichit alors la carte est revient de nouveau à celui qui à placer l'enchère
+            let entry = await Collection.findOrCreate({
                 where: { UserId: enchere.sellerId, CardId: enchere.CardId },
                 defaults: { nb: 1 }
             });

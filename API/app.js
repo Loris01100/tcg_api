@@ -19,11 +19,17 @@ app.use(express.urlencoded({ extended: true }));
 //routes pour l'API
 app.post('/login', Login);
 app.post('/register', RegisterUser);
+//route profil
 app.get('/api/profil', GetUser);
+//route déconnexion
 app.post('/logout', DisconnectUser);
+//route toutes les cartes
 app.get('/api/cards', GetAllCards);
+//routes ouverture de booster
 app.post('/booster', OpenBooster);
+//route pour convertir les cartes en argent
 app.post('/convert', ConvertCards);
+//route pour les enchères
 app.post('/enchere', CreateEnchere);
 app.post('/encherir', PlaceBid);
 app.get('/encheres', GetEncheres);

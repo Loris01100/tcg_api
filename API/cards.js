@@ -16,30 +16,30 @@ function tirageAleatoireRarity() {
 
 
 export async function OpenBooster(req, res) {
-    const { token } = req.body;
+    let { token } = req.body;
 
     try {
-        const user = await User.findOne({ where: { token } });
+        let user = await User.findOne({ where: { token } });
         if (!user) return res.status(401).json({ message: "Token invalide" });
 
-        const now = Date.now();
-        const delay = 0; // tu peux remettre 5 * 60 * 1000 plus tard
+        let now = Date.now();
+        let delay = 0; //à remodifier pour mettre 5 minutes
         if (now - user.lastBooster < delay) {
-            const restant = Math.ceil((delay - (now - user.lastBooster)) / 1000);
-            return res.status(429).json({ message: `Attendez encore ${restant}s` });
+            let restant = Math.ceil((delay - (now - user.lastBooster)) / 1000);
+            return res.status(429).json({ message: `Il reste encore ${restant}s` });
         }
 
-        const allCards = await Card.findAll();
-        const booster = [];
+        let allCards = await Card.findAll();
+        let booster = [];
 
         for (let i = 0; i < 5; i++) {
-            const rarity = tirageAleatoireRarity();
-            const card = getRandomCardByRarity(allCards, rarity);
+            let rarity = tirageAleatoireRarity();
+            let card = getRandomCardByRarity(allCards, rarity);
             if (card) booster.push(card);
         }
 
-        for (const card of booster) {
-            const [entry, created] = await Collection.findOrCreate({
+        for (let card of booster) {
+            let [entry, created] = await Collection.findOrCreate({
                 where: { UserId: user.id, CardId: card.id },
                 defaults: { nb: 1 }
             });
@@ -54,13 +54,13 @@ export async function OpenBooster(req, res) {
         await user.save();
 
         res.status(200).json({
-            message: "Booster ouvert avec succès",
+            message: "Ouverture du booster valide",
             booster
         });
 
     } catch (err) {
         console.error("Erreur booster :", err);
-        res.status(500).json({ message: "Erreur serveur" });
+        res.status(500).json({ message: "Erreur côté serveur" });
     }
 }
 export async function GetAllCards(req, res) {
@@ -77,16 +77,16 @@ export async function GetAllCards(req, res) {
 }
 
 export async function ConvertCards(req, res) {
-    const { token, cardId } = req.body;
+    let { token, cardId } = req.body;
 
     try {
-        const user = await User.findOne({ where: { token } });
+        let user = await User.findOne({ where: { token } });
         if (!user) return res.status(401).json({ message: "Token invalide" });
 
-        const card = await Card.findByPk(cardId);
+        let card = await Card.findByPk(cardId);
         if (!card) return res.status(404).json({ message: "Carte introuvable" });
 
-        const entry = await Collection.findOne({
+        let entry = await Collection.findOne({
             where: { UserId: user.id, CardId: card.id }
         });
 
@@ -94,7 +94,7 @@ export async function ConvertCards(req, res) {
             return res.status(400).json({ message: "Cette carte ne peut pas être convertie" });
         }
 
-        // Détermine le gain
+        //le coût d'une carte en fonction de sa rareté
         const gain = {
             common: 5,
             rare: 25,

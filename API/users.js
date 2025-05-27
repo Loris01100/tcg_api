@@ -6,15 +6,15 @@ export async function RegisterUser(req, res) {
     console.log("Headers Content-Type:", req.headers['content-type']);
     console.log("Corps de la requête (req.body) :", req.body);
 
-    const { username, password } = req.body;
+    let { username, password } = req.body;
 
     try {
-        const existing = await User.findOne({ where: { username } });
+        let existing = await User.findOne({ where: { username } });
         if (existing) {
             return res.status(409).send("Nom d'utilisateur déjà pris");
         }
 
-        const newUser = await User.create({
+        let newUser = await User.create({
             username,
             password,
             currency: 0,
@@ -43,16 +43,16 @@ export async function RegisterUser(req, res) {
 
 //assure la connexion d'un utilisateur
 export async function Login(req, res) {
-    const { username, password } = req.body;
+    let { username, password } = req.body;
 
     try {
-        const user = await User.findOne({ where: { username, password } });
+        let user = await User.findOne({ where: { username, password } });
 
         if (!user) {
             return res.status(401).json({ message: "nom d'utilisateur ou mot de passe incorrect" });
         }
 
-        const token = crypto.randomBytes(8).toString('hex');
+        let token = crypto.randomBytes(8).toString('hex');
         user.token = token;
         await user.save();
 
@@ -109,10 +109,10 @@ export async function GetUser(req, res) {
 
 //assure la déconnexion d'un utilisateur
 export async function DisconnectUser(req, res) {
-    const token = req.body.token;
+    let token = req.body.token;
 
     try {
-        const user = await User.findOne({ where: { token } });
+        let user = await User.findOne({ where: { token } });
 
         if (!user) {
             return res.status(404).json({ message: "l'utilisateur n'a pas été trouvé dans la base de données" });
