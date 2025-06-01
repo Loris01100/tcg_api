@@ -7,8 +7,8 @@ if (!token) {
 else {
 
     Promise.all([
-        fetch('http://localhost:3001/api/profil?token=' + token).then(res => res.json()),
-        fetch('http://localhost:3001/api/cards').then(res => res.json())
+        fetch('http://localhost:3001/profil?token=' + token).then(res => res.json()),
+        fetch('http://localhost:3001/cards').then(res => res.json())
     ])
         .then(([profilRes, cardsRes]) => {
             const user = profilRes.data;

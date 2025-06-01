@@ -25,7 +25,7 @@ export async function OpenBooster(req, res) {
         if (!user) return res.status(401).json({ message: "Token invalide" });
 
         let now = Date.now();
-        let delay = 0; //à remodifier pour mettre 5 minutes
+        let delay =  5 * 60 * 1000; //à remodifier pour mettre 5 minutes
         if (now - user.lastBooster < delay) {
             let restant = Math.ceil((delay - (now - user.lastBooster)) / 1000);
             return res.status(429).json({ message: `Il reste encore ${restant}s` });
@@ -70,13 +70,27 @@ export async function OpenBooster(req, res) {
 export async function GetAllCards(req, res) {
     try {
         let cards = await Card.findAll();
+
+        //si l'utilisateur n'a aucune carte
+        if (!cards || cards.length === 0) {
+            return res.status(404).json({
+                message: "Aucune carte trouvée"
+            });
+        }
+
+        //requête réussie
         res.status(200).json({
             message: "Cartes disponibles",
             data: cards
         });
+
     } catch (err) {
-        console.error("Erreur :", err);
-        res.status(500).json({ message: "Erreur côté serveur" });
+        console.error("Erreur lors de la récupération des cartes :", err);
+
+        //erreur serveur
+        res.status(500).json({
+            message: "Erreur serveur interne"
+        });
     }
 }
 

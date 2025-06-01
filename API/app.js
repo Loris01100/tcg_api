@@ -17,15 +17,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
-//routes pour l'API
+//routes pour la connexion/inscription d'un utilisateur
 app.post('/login', Login);
 app.post('/register', RegisterUser);
 //route profil
-app.get('/api/profil', GetUser);
+app.get('/profil', GetUser);
 //route déconnexion
 app.post('/logout', DisconnectUser);
-//route toutes les cartes
-app.get('/api/cards', GetAllCards);
+//route pour accèder à toutes les cartes de l'application
+app.get('/cards', GetAllCards);
 //routes ouverture de booster
 app.post('/booster', OpenBooster);
 //route pour convertir les cartes en argent

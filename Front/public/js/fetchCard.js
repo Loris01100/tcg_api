@@ -5,7 +5,7 @@ if (!token) {
 }
 
 else {
-    fetch('http://localhost:3001/api/cards?token=${token}')
+    fetch('http://localhost:3001/cards?token=${token}')
         .then(response => response.json())
         .then(result => {
             let cards = result.data;
