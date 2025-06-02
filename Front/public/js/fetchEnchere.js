@@ -1,53 +1,57 @@
-const token = localStorage.getItem('token');
+//récupère le token stocké dans le cache du navigateur
+let token = localStorage.getItem('token');
 
+//redirection si aucun token trouvé
 if (!token) {
     window.location.href = 'login.html';
-} else {
+}
+else {
     Promise.all([
+        //Requête API
         fetch('http://localhost:3001/encheres?token=' + token).then(r => r.json()),
-        fetch('http://localhost:3001/api/cards').then(r => r.json())
+        fetch('http://localhost:3001/cards').then(r => r.json())
     ])
         .then(([encheresRes, cardData]) => {
-            console.log("Réponse brute API /encheres :", encheresRes);
 
-            const encheres = encheresRes.encheres; // ✅ fix ici
-            const allCards = cardData.data;
+            let encheres = encheresRes.encheres;
+            let allCards = cardData.data;
 
-            const container = document.getElementById('auction-list');
-            const messageEl = document.getElementById('message');
+            let container = document.getElementById('enchere-list');
+            let messagePrevention = document.getElementById('message');
 
+            //préviens l'utilisateur si aucune enchère n'est en cours
             if (!encheres || encheres.length === 0) {
-                messageEl.textContent = "Aucune enchère en cours.";
+                messagePrevention.textContent = "Aucune enchère en cours.";
                 return;
             }
 
+            //affiche toutes les enchères trouvés
             encheres.forEach(enchere => {
-                const card = allCards.find(c => c.id === enchere.CardId);
+                let card = allCards.find(c => c.id === enchere.CardId);
 
-                if (!card) {
-                    console.warn(`Carte id ${enchere.cardId} introuvable.`);
-                    return;
-                }
 
-                const enchereDiv = document.createElement('div');
+                //bloc HTML pour une enchère
+                let enchereDiv = document.createElement('div');
                 enchereDiv.classList.add("card");
 
                 enchereDiv.innerHTML = `
                 <h3>${card.name}</h3>
                 <p>Rareté : ${card.rarity}</p>
-                <p>Prix actuel : ${enchere.bid} 🪙</p>
+                <p>Prix actuel : ${enchere.bid} $</p>
                 <p>Se termine le : ${new Date(enchere.end_date).toLocaleString()}</p>
             `;
 
-                const input = document.createElement('input');
+                //bloc html pour pouvoir enchérir
+                let input = document.createElement('input');
                 input.type = 'number';
                 input.placeholder = 'Votre mise';
                 input.min = enchere.bid + 1;
 
-                const button = document.createElement('button');
+                //bouton pour enchérir
+                let button = document.createElement('button');
                 button.textContent = 'Enchérir';
                 button.addEventListener('click', () => {
-                    const montant = parseInt(input.value);
+                    let montant = parseInt(input.value);
                     if (isNaN(montant) || montant <= enchere.bid) {
                         alert("Montant invalide");
                         return;
@@ -69,6 +73,7 @@ if (!token) {
                         });
                 });
 
+                //ajout des blocs HTML sur la page
                 enchereDiv.appendChild(input);
                 enchereDiv.appendChild(button);
                 container.appendChild(enchereDiv);

@@ -16,7 +16,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
-app.use(express.urlencoded({ extended: true }));
+
 //routes pour la connexion/inscription d'un utilisateur
 app.post('/login', Login);
 app.post('/register', RegisterUser);

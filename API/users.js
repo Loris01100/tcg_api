@@ -47,12 +47,15 @@ export async function Login(req, res) {
     let { username, password } = req.body;
 
     try {
+        //vérification token utilisateur
         let user = await User.findOne({ where: { username, password } });
 
+        //vérification nom utilisateur
         if (!user) {
             return res.status(401).json({ message: "nom d'utilisateur ou mot de passe incorrect" });
         }
 
+        //permet de données une valeure aléatoire à un token
         let token = crypto.randomBytes(8).toString('hex');
         user.token = token;
         await user.save();
@@ -73,10 +76,11 @@ export async function GetUser(req, res) {
     let token = req.query.token || req.body?.token;
 
     try {
+        //cherche dans la base de données le token et affiche la collection de carte lui appartenant
         let user = await User.findOne({
             where: { token },
             include: {
-                model: Card,
+                model: Card, //associe les cartes grâce à la relation entre User et Card
                 through: { attributes: ['nb'] }
             }
         });
@@ -85,6 +89,7 @@ export async function GetUser(req, res) {
             return res.status(404).json({ message: "Utilisateur introuvable" });
         }
 
+        //transforme la collection en tableau
         let collection = user.Cards.map(card => ({
             id: card.id,
             name: card.name,
@@ -113,6 +118,7 @@ export async function DisconnectUser(req, res) {
     let token = req.body.token;
 
     try {
+        //vérification du token
         let user = await User.findOne({ where: { token } });
 
         if (!user) {

@@ -8,8 +8,9 @@ document.addEventListener("DOMContentLoaded", () => {
     let selectCarte = document.getElementById("selectCarte");
 
     Promise.all([
-        fetch(`http://localhost:3001/api/profil?token=${token}`).then(res => res.json()),
-        fetch(`http://localhost:3001/api/cards`).then(res => res.json())
+        //Requête API
+        fetch(`http://localhost:3001/profil?token=${token}`).then(res => res.json()),
+        fetch(`http://localhost:3001/cards`).then(res => res.json())
     ])
         .then(([userRes, cardsRes]) => {
             let collection = userRes.data.collection;

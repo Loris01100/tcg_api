@@ -1,5 +1,7 @@
-const token = localStorage.getItem('token');
+//récupère le token stocké dans le cache du navigateur
+let token = localStorage.getItem('token');
 
+//redirection si aucun token trouvé
 if (!token) {
     window.location.href = 'login.html';
 }
@@ -7,6 +9,7 @@ if (!token) {
 else {
 
     Promise.all([
+        //Requête API
         fetch('http://localhost:3001/profil?token=' + token).then(res => res.json()),
         fetch('http://localhost:3001/cards').then(res => res.json())
     ])
@@ -44,7 +47,7 @@ else {
                             .then(res => res.json())
                             .then(data => {
                                 alert(data.message);
-                                location.reload(); // ou mettre à jour dynamiquement
+                                location.reload();
                             });
                     });
                 });

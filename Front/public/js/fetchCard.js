@@ -1,16 +1,22 @@
-const token = localStorage.getItem('token');
+//récupère le token stocké dans le cache du navigateur
+let token = localStorage.getItem('token');
 
+//redirection si aucun token trouvé
 if (!token) {
     window.location.href = 'login.html';
 }
 
 else {
+    //requête API
     fetch('http://localhost:3001/cards?token=${token}')
         .then(response => response.json())
         .then(result => {
             let cards = result.data;
 
+            //élément HTML
             let cardList = document.getElementById('card-list');
+
+            //ajout de la carte sur la page
             cards.forEach(card => {
                 let div = document.createElement('div');
                 div.className = 'card';

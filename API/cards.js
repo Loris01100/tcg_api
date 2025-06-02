@@ -2,9 +2,9 @@ import { User, Card, Collection } from './Models/Association.js';
 
 //récupère une carte aléatoire par rapport à la rareté obtenu
 function getRandomCardByRarity(cards, rarity) {
-    let filtered = cards.filter(card => card.rarity === rarity);
+    let filtered = cards.filter(card => card.rarity === rarity); //filtre les cartes de cette rareté
     if (filtered.length === 0) return null;
-    let index = Math.floor(Math.random() * filtered.length);
+    let index = Math.floor(Math.random() * filtered.length); //tire une carte au hasard
     return filtered[index];
 }
 
@@ -21,16 +21,19 @@ export async function OpenBooster(req, res) {
     let { token } = req.body;
 
     try {
+        //vérification du token
         let user = await User.findOne({ where: { token } });
         if (!user) return res.status(401).json({ message: "Token invalide" });
 
+        //vérification du temps d'attente entre deux boosters
         let now = Date.now();
-        let delay =  5 * 60 * 1000; //à remodifier pour mettre 5 minutes
+        let delay =  5 * 60 * 1000;
         if (now - user.lastBooster < delay) {
             let restant = Math.ceil((delay - (now - user.lastBooster)) / 1000);
             return res.status(429).json({ message: `Il reste encore ${restant}s` });
         }
 
+        //tire 5 cartes selon la rareté obtenu
         let allCards = await Card.findAll();
         let booster = [];
 
@@ -40,18 +43,21 @@ export async function OpenBooster(req, res) {
             if (card) booster.push(card);
         }
 
+        //ajout des cartes dans la collection de l'utilisateur
         for (let card of booster) {
             let [entry, created] = await Collection.findOrCreate({
                 where: { UserId: user.id, CardId: card.id },
                 defaults: { nb: 1 }
             });
 
+            //si la carte est déjà en sa possession on fait +1 sur l'attribut nb
             if (!created) {
                 entry.nb += 1;
                 await entry.save();
             }
         }
 
+        //met à jour la date du dernier booster obtenu pour le délai
         user.lastBooster = now;
         await user.save();
 
@@ -99,12 +105,15 @@ export async function ConvertCards(req, res) {
     let { token, cardId } = req.body;
 
     try {
+        //vérification du token
         let user = await User.findOne({ where: { token } });
         if (!user) return res.status(401).json({ message: "Token invalide" });
 
+        //vérification de la possession de la carte dans la base de données
         let card = await Card.findByPk(cardId);
         if (!card) return res.status(404).json({ message: "Carte introuvable" });
 
+        //on vérifie si l'utilisateur possède bien plus d'une copie de la carte
         let entry = await Collection.findOne({
             where: { UserId: user.id, CardId: card.id }
         });
@@ -120,6 +129,7 @@ export async function ConvertCards(req, res) {
             legendary: 150
         };
 
+        //on supprime la carte après la conversion
         entry.nb -= 1;
         await entry.save();
 
